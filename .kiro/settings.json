@@ -1,0 +1,15 @@
+{
+  "project": {
+    "name": "LacrosseBoss",
+    "description": "Public lacrosse scheduling and scoring application",
+    "stack": ["Next.js 16", "React 19", "TypeScript", "Tailwind CSS 4", "Supabase", "Vercel"],
+    "skills": [
+      "../../supabase/agent-skills/skills/supabase",
+      "../../supabase/agent-skills/skills/supabase-postgres-best-practices",
+      "../../vercel/agent-skills/skills/react-best-practices",
+      "../../vercel/agent-skills/skills/composition-patterns",
+      "../../vercel/agent-skills/skills/deploy-to-vercel",
+      "../../vercel/agent-skills/skills/web-design-guidelines"
+    ]
+  }
+}
