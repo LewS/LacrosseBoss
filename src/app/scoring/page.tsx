@@ -9,9 +9,19 @@ type LiveGame = Game & { home_team: Team; away_team: Team };
 export default function ScoringPage() {
   const [games, setGames] = useState<LiveGame[]>([]);
   const [events, setEvents] = useState<Record<string, GameEvent[]>>({});
-  const supabase = createClient();
 
   useEffect(() => {
+    const supabase = createClient();
+
+    async function loadEvents(gameId: string) {
+      const { data } = await supabase
+        .from("game_events")
+        .select("*")
+        .eq("game_id", gameId)
+        .order("created_at", { ascending: true });
+      if (data) setEvents((prev) => ({ ...prev, [gameId]: data }));
+    }
+
     supabase
       .from("games")
       .select("*, home_team:teams!home_team_id(*), away_team:teams!away_team_id(*)")
@@ -38,15 +48,6 @@ export default function ScoringPage() {
 
     return () => { supabase.removeChannel(channel); };
   }, []);
-
-  async function loadEvents(gameId: string) {
-    const { data } = await supabase
-      .from("game_events")
-      .select("*")
-      .eq("game_id", gameId)
-      .order("created_at", { ascending: true });
-    if (data) setEvents((prev) => ({ ...prev, [gameId]: data }));
-  }
 
   function formatEvent(evt: GameEvent, game: LiveGame) {
     const team = evt.team_id === game.home_team.id ? game.home_team.short_name : game.away_team.short_name;
