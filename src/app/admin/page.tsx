@@ -15,6 +15,7 @@ export default async function AdminPage() {
         <a href="/admin/teams" className="border rounded-lg p-4 hover:bg-gray-50">Manage Teams</a>
         <a href="/admin/games" className="border rounded-lg p-4 hover:bg-gray-50">Manage Games</a>
         <a href="/admin/seasons" className="border rounded-lg p-4 hover:bg-gray-50">Manage Seasons</a>
+        <a href="/admin/account" className="border rounded-lg p-4 hover:bg-gray-50">Account Settings</a>
       </div>
     </main>
   );
