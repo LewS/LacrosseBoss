@@ -12,6 +12,8 @@ export default function TeamsPage() {
   const [shortName, setShortName] = useState("");
   const [divisionId, setDivisionId] = useState("");
   const [color, setColor] = useState("");
+  const [editing, setEditing] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => { load(); }, []);
@@ -33,6 +35,12 @@ export default function TeamsPage() {
 
   async function handleDelete(id: string) {
     await supabase.from("teams").delete().eq("id", id);
+    load();
+  }
+
+  async function handleSave(id: string) {
+    await supabase.from("teams").update({ name: editName }).eq("id", id);
+    setEditing(null);
     load();
   }
 
@@ -59,10 +67,28 @@ export default function TeamsPage() {
         <tbody>
           {teams.map((t) => (
             <tr key={t.id} className="border-b">
-              <td className="p-2">{t.name}</td>
+              <td className="p-2">
+                {editing === t.id ? (
+                  <input value={editName} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSave(t.id)} className="border rounded px-2 py-1 w-full" autoFocus />
+                ) : (
+                  <span onDoubleClick={() => { setEditing(t.id); setEditName(t.name); }} className="cursor-pointer">{t.name}</span>
+                )}
+              </td>
               <td className="p-2">{t.short_name}</td>
               <td className="p-2">{t.division.name}</td>
-              <td className="p-2"><button onClick={() => handleDelete(t.id)} className="text-red-600 text-sm hover:underline">Delete</button></td>
+              <td className="p-2 flex gap-2">
+                {editing === t.id ? (
+                  <>
+                    <button onClick={() => handleSave(t.id)} className="text-green-600 text-sm hover:underline">Save</button>
+                    <button onClick={() => setEditing(null)} className="text-gray-500 text-sm hover:underline">Cancel</button>
+                  </>
+                ) : (
+                  <>
+                    <button onClick={() => { setEditing(t.id); setEditName(t.name); }} className="text-blue-600 text-sm hover:underline">Edit</button>
+                    <button onClick={() => handleDelete(t.id)} className="text-red-600 text-sm hover:underline">Delete</button>
+                  </>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>

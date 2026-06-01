@@ -8,6 +8,8 @@ export default function CompetitionsPage() {
   const supabase = createClient();
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [form, setForm] = useState({ name: "", description: "" });
+  const [editing, setEditing] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => { load(); }, []);
@@ -23,6 +25,12 @@ export default function CompetitionsPage() {
     const { error } = await supabase.from("competitions").insert({ name: form.name, description: form.description || null });
     if (error) setError(error.message);
     else { setForm({ name: "", description: "" }); load(); }
+  }
+
+  async function handleSave(id: string) {
+    await supabase.from("competitions").update({ name: editName }).eq("id", id);
+    setEditing(null);
+    load();
   }
 
   async function handleDelete(id: string) {
@@ -49,9 +57,27 @@ export default function CompetitionsPage() {
         <tbody>
           {competitions.map((c) => (
             <tr key={c.id} className="border-b">
-              <td className="p-2">{c.name}</td>
+              <td className="p-2">
+                {editing === c.id ? (
+                  <input value={editName} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSave(c.id)} className="border rounded px-2 py-1 w-full" autoFocus />
+                ) : (
+                  <span onDoubleClick={() => { setEditing(c.id); setEditName(c.name); }} className="cursor-pointer">{c.name}</span>
+                )}
+              </td>
               <td className="p-2 text-sm text-gray-600">{c.description || "—"}</td>
-              <td className="p-2"><button onClick={() => handleDelete(c.id)} className="text-red-600 text-sm hover:underline">Delete</button></td>
+              <td className="p-2 flex gap-2">
+                {editing === c.id ? (
+                  <>
+                    <button onClick={() => handleSave(c.id)} className="text-green-600 text-sm hover:underline">Save</button>
+                    <button onClick={() => setEditing(null)} className="text-gray-500 text-sm hover:underline">Cancel</button>
+                  </>
+                ) : (
+                  <>
+                    <button onClick={() => { setEditing(c.id); setEditName(c.name); }} className="text-blue-600 text-sm hover:underline">Edit</button>
+                    <button onClick={() => handleDelete(c.id)} className="text-red-600 text-sm hover:underline">Delete</button>
+                  </>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>

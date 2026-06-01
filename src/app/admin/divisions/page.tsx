@@ -8,6 +8,8 @@ export default function DivisionsPage() {
   const supabase = createClient();
   const [divisions, setDivisions] = useState<Division[]>([]);
   const [form, setForm] = useState({ name: "", ageBracket: "", gender: "mens" });
+  const [editing, setEditing] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => { load(); }, []);
@@ -23,6 +25,12 @@ export default function DivisionsPage() {
     const { error } = await supabase.from("divisions").insert({ name: form.name, age_bracket: form.ageBracket, gender: form.gender });
     if (error) setError(error.message);
     else { setForm({ name: "", ageBracket: "", gender: "mens" }); load(); }
+  }
+
+  async function handleSave(id: string) {
+    await supabase.from("divisions").update({ name: editName }).eq("id", id);
+    setEditing(null);
+    load();
   }
 
   async function handleDelete(id: string) {
@@ -54,10 +62,28 @@ export default function DivisionsPage() {
         <tbody>
           {divisions.map((d) => (
             <tr key={d.id} className="border-b">
-              <td className="p-2">{d.name}</td>
+              <td className="p-2">
+                {editing === d.id ? (
+                  <input value={editName} onChange={(e) => setEditName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSave(d.id)} className="border rounded px-2 py-1 w-full" autoFocus />
+                ) : (
+                  <span onDoubleClick={() => { setEditing(d.id); setEditName(d.name); }} className="cursor-pointer">{d.name}</span>
+                )}
+              </td>
               <td className="p-2">{d.age_bracket}</td>
               <td className="p-2">{d.gender}</td>
-              <td className="p-2"><button onClick={() => handleDelete(d.id)} className="text-red-600 text-sm hover:underline">Delete</button></td>
+              <td className="p-2 flex gap-2">
+                {editing === d.id ? (
+                  <>
+                    <button onClick={() => handleSave(d.id)} className="text-green-600 text-sm hover:underline">Save</button>
+                    <button onClick={() => setEditing(null)} className="text-gray-500 text-sm hover:underline">Cancel</button>
+                  </>
+                ) : (
+                  <>
+                    <button onClick={() => { setEditing(d.id); setEditName(d.name); }} className="text-blue-600 text-sm hover:underline">Edit</button>
+                    <button onClick={() => handleDelete(d.id)} className="text-red-600 text-sm hover:underline">Delete</button>
+                  </>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
