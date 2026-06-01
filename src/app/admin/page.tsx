@@ -12,9 +12,12 @@ export default async function AdminPage() {
       <h1 className="text-3xl font-bold mb-6">Admin</h1>
       <p className="text-gray-600">Signed in as {user.email}</p>
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        <a href="/admin/competitions" className="border rounded-lg p-4 hover:bg-gray-50">Manage Competitions</a>
+        <a href="/admin/divisions" className="border rounded-lg p-4 hover:bg-gray-50">Manage Divisions</a>
+        <a href="/admin/seasons" className="border rounded-lg p-4 hover:bg-gray-50">Manage Seasons</a>
+        <a href="/admin/clubs" className="border rounded-lg p-4 hover:bg-gray-50">Manage Clubs</a>
         <a href="/admin/teams" className="border rounded-lg p-4 hover:bg-gray-50">Manage Teams</a>
         <a href="/admin/games" className="border rounded-lg p-4 hover:bg-gray-50">Manage Games</a>
-        <a href="/admin/seasons" className="border rounded-lg p-4 hover:bg-gray-50">Manage Seasons</a>
         <a href="/admin/account" className="border rounded-lg p-4 hover:bg-gray-50">Account Settings</a>
       </div>
     </main>
